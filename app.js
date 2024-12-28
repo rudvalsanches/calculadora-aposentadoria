@@ -39,8 +39,8 @@ document.getElementById('formulario').addEventListener('submit', function (e) {
 
 // Função para salvar os dados no Google Planilhas
 async function enviarParaPlanilha(nome, dataNascimento, email, valorMensal, rentabilidade, aporteMensal, anos, meses) {
-    const sheetId = '159Q_N0ZMyXJ1u5-LZ_SOdJO8CyDCy_66FZO4O34BT2E';
-    const apiKey = 'AIzaSyAoVmEipkTkwqg93RpMqsQm_7CW-754Z9E';
+    const sheetId = '159Q_N0ZMyXJ1u5-LZ_SOdJO8CyDCy_66FZO4O34BT2E'; // Seu Sheet ID
+    const apiKey = 'AIzaSyAoVmEipkTkwqg93RpMqsQm_7CW-754Z9E'; // Sua API Key
 
     const url = `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/Sheet1!A1:append?valueInputOption=USER_ENTERED&key=${apiKey}`;
 
