@@ -8,12 +8,29 @@
 <body>
     <h1>Calculadora de Aposentadoria</h1>
     <form id="formulario">
-        <label for="idade">Idade:</label>
-        <input type="number" id="idade" required>
-        <label for="tempo-contribuicao">Tempo de Contribuição (anos):</label>
-        <input type="number" id="tempo-contribuicao" required>
+        <!-- Campos do Usuário -->
+        <label for="nome">Nome:</label>
+        <input type="text" id="nome" required placeholder="Seu nome">
+
+        <label for="data-nascimento">Data de Nascimento:</label>
+        <input type="date" id="data-nascimento" required>
+
+        <label for="email">E-mail:</label>
+        <input type="email" id="email" required placeholder="seuemail@exemplo.com">
+
+        <!-- Campos da Calculadora -->
+        <label for="valor-mensal">Quanto deseja receber mensalmente?</label>
+        <input type="number" id="valor-mensal" required placeholder="Ex: 5000">
+
+        <label for="rentabilidade">Rentabilidade anual estimada (%)</label>
+        <input type="number" id="rentabilidade" step="0.01" required placeholder="Ex: 5">
+
+        <label for="aporte">Quanto consegue aportar mensalmente?</label>
+        <input type="number" id="aporte" required placeholder="Ex: 1000">
+
         <button type="submit">Calcular</button>
     </form>
+
     <p id="resultado"></p>
 
     <script src="app.js"></script>
