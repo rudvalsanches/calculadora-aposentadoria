@@ -1,77 +1,70 @@
 document.getElementById('formulario').addEventListener('submit', function (e) {
     e.preventDefault();
 
-    // Capturar dados do usuário
     const nome = document.getElementById('nome').value;
     const dataNascimento = document.getElementById('data-nascimento').value;
     const email = document.getElementById('email').value;
 
-    // Capturar dados da calculadora
     const valorMensal = parseFloat(document.getElementById('valor-mensal').value);
-    const rentabilidadeAnual = parseFloat(document.getElementById('rentabilidade').value) / 100;
+    const rentabilidadeAnual = parseFloat(document.getElementById('rentabilidade').value);
     const aporteMensal = parseFloat(document.getElementById('aporte').value);
 
-    // Calcular montante necessário
-    const montanteNecessario = valorMensal * 12 / rentabilidadeAnual;
-
-    // Calcular tempo necessário
+    const montanteNecessario = valorMensal * 12 / (rentabilidadeAnual / 100);
     let saldoAtual = 0;
     let meses = 0;
+
     while (saldoAtual < montanteNecessario) {
         saldoAtual += aporteMensal;
-        saldoAtual += saldoAtual * (rentabilidadeAnual / 12);
+        saldoAtual += saldoAtual * (rentabilidadeAnual / 100 / 12);
         meses++;
     }
 
     const anos = Math.floor(meses / 12);
     const mesesRestantes = meses % 12;
 
-    // Exibir o resultado
     const resultado = `
         Para receber R$ ${valorMensal.toLocaleString('pt-BR')} por mês, você precisará de um montante total de R$ ${montanteNecessario.toLocaleString('pt-BR')}.
-        Com um aporte mensal de R$ ${aporteMensal.toLocaleString('pt-BR')} e rentabilidade anual de ${(rentabilidadeAnual * 100).toFixed(2)}%, você alcançará esse montante em aproximadamente ${anos} anos e ${mesesRestantes} meses.
+        Com um aporte mensal de R$ ${aporteMensal.toLocaleString('pt-BR')} e rentabilidade anual de ${rentabilidadeAnual.toFixed(2)}%, você alcançará esse montante em aproximadamente ${anos} anos e ${mesesRestantes} meses.
     `;
     document.getElementById('resultado').textContent = resultado;
 
-    // Enviar os dados para a planilha
-    enviarParaPlanilha(nome, dataNascimento, email, valorMensal, rentabilidadeAnual * 100, aporteMensal, anos, mesesRestantes);
+    enviarParaMongoDB(nome, dataNascimento, email, valorMensal, rentabilidadeAnual, aporteMensal, anos, mesesRestantes);
 });
 
-// Função para salvar os dados no Google Planilhas
-async function enviarParaPlanilha(nome, dataNascimento, email, valorMensal, rentabilidade, aporteMensal, anos, meses) {
-    const sheetId = '159Q_N0ZMyXJ1u5-LZ_SOdJO8CyDCy_66FZO4O34BT2E'; // Seu Sheet ID
-    const apiKey = 'AIzaSyAoVmEipkTkwqg93RpMqsQm_7CW-754Z9E'; // Sua API Key
 
-    const url = `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/Sheet1!A1:append?valueInputOption=USER_ENTERED&key=${apiKey}`;
+const { MongoClient } = require('mongodb');
 
-    const dados = {
-        values: [[
-            nome,
-            dataNascimento,
-            email,
-            valorMensal,
-            rentabilidade,
-            aporteMensal,
-            `${anos} anos e ${meses} meses`,
-            new Date().toLocaleString()
-        ]],
-    };
+async function enviarParaMongoDB(nome, dataNascimento, email, valorMensal, rentabilidade, aporteMensal, anos, meses) {
+    const uri = "mongodb+srv://calculadora-aposentadoria:MTbRuIiP1ZW8rPY4@cluster-mc2r.shsme.mongodb.net/?retryWrites=true&w=majority&appName=cluster-mc2r"; // Substitua pela sua URL completa
+    const client = new MongoClient(uri);
 
     try {
-        const response = await fetch(url, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(dados),
-        });
+        // Conectar ao cluster MongoDB
+        await client.connect();
 
-        if (response.ok) {
-            console.log('Dados enviados com sucesso!');
-        } else {
-            console.error('Erro ao enviar os dados:', await response.text());
-        }
-    } catch (error) {
-        console.error('Erro na requisição:', error);
+        // Selecionar banco de dados e coleção
+        const database = client.db("calculadoraDB");
+        const collection = database.collection("usuarios");
+
+        // Criar o documento com os dados
+        const documento = {
+            nome: nome,
+            dataNascimento: dataNascimento,
+            email: email,
+            valorMensal: valorMensal,
+            rentabilidade: rentabilidade,
+            aporteMensal: aporteMensal,
+            tempoEstimado: `${anos} anos e ${meses} meses`,
+            dataHora: new Date().toISOString(),
+        };
+
+        // Inserir o documento no MongoDB
+        const resultado = await collection.insertOne(documento);
+        console.log(`Documento inserido com ID: ${resultado.insertedId}`);
+    } catch (erro) {
+        console.error('Erro ao conectar ao MongoDB:', erro);
+    } finally {
+        // Fechar a conexão
+        await client.close();
     }
 }
