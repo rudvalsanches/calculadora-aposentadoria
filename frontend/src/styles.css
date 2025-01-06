@@ -1,0 +1,67 @@
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background-color: #121212;
+    color: white;
+  }
+  
+  form {
+    display: flex;
+    flex-direction: column;
+    max-width: 400px; /* Limita o tamanho do formulário em telas grandes */
+    margin: 20px auto; /* Centraliza o formulário */
+    padding: 20px;
+    background-color: #1e1e1e;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+  }
+  
+  form h2 {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  
+  form label {
+    margin-bottom: 5px;
+    font-size: 14px;
+  }
+  
+  form input {
+    padding: 10px;
+    margin-bottom: 15px;
+    border: none;
+    border-radius: 4px;
+    font-size: 16px;
+  }
+  
+  form button {
+    padding: 10px;
+    font-size: 16px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  
+  form button:hover {
+    background-color: #0056b3;
+  }
+  
+  /* Responsividade para telas menores */
+  @media (max-width: 600px) {
+    form {
+      width: 90%; /* O formulário ocupa quase toda a largura da tela */
+    }
+  
+    form input,
+    form button {
+      font-size: 14px; /* Tamanho da fonte menor para telas pequenas */
+      padding: 8px;
+    }
+  
+    form h2 {
+      font-size: 18px; /* Reduz o tamanho do título */
+    }
+  }
+  
