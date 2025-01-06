@@ -3,7 +3,14 @@ import Form from "./components/Form";
 import ResultPage from "./pages/ResultPage";
 
 function App() {
-  const [result, setResult] = useState<{ montante: number; tempo: number } | null>(null);
+  const [result, setResult] = useState<{
+    montante: number;
+    tempo: number;
+    rendaMensal: number;
+    aporteMensal: number;
+    aporteInicial: number;
+    taxaAnual: number;
+  } | null>(null);
 
   const saveUserData = async (userData: { nome: string; email: string; dataNascimento: string }) => {
     try {

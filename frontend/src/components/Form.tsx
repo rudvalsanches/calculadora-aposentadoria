@@ -1,7 +1,14 @@
 import React, { useState } from "react";
 
 interface FormProps {
-  onCalculate: (result: { montante: number; tempo: number }) => void;
+  onCalculate: (result: {
+    montante: number;
+    tempo: number;
+    rendaMensal: number;
+    aporteMensal: number;
+    aporteInicial: number;
+    taxaAnual: number;
+  }) => void;
   onSaveUser: (userData: { nome: string; email: string; dataNascimento: string }) => void;
 }
 
@@ -17,29 +24,28 @@ const Form: React.FC<FormProps> = ({ onCalculate, onSaveUser }) => {
   });
 
   const handleInputChange = (field: string, value: string) => {
-    if (field === "rendaMensal" || field === "aporteInicial" || field === "aporteMensal") {
-      // Remove caracteres inválidos e aplica formatação brasileira
+    if (["rendaMensal", "aporteInicial", "aporteMensal"].includes(field)) {
+      // Formatar valores monetários no formato brasileiro
       const formattedValue = value
-        .replace(/\D/g, "") // Remove tudo que não é número
-        .replace(/(\d)(\d{2})$/, "$1,$2") // Adiciona vírgula para os centavos
+        .replace(/\D/g, "") // Remove caracteres não numéricos
+        .replace(/(\d)(\d{2})$/, "$1,$2") // Adiciona vírgula para centavos
         .replace(/(?=(\d{3})+(\D))\B/g, "."); // Adiciona pontos de milhar
-  
+
       setFormData((prev) => ({
         ...prev,
         [field]: formattedValue,
       }));
     } else {
-      // Atualiza outros campos sem formatação
       setFormData((prev) => ({
         ...prev,
         [field]: value,
       }));
     }
   };
-  
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-  
+
     const {
       nome,
       email,
@@ -49,7 +55,7 @@ const Form: React.FC<FormProps> = ({ onCalculate, onSaveUser }) => {
       aporteMensal,
       taxaAnual,
     } = formData;
-  
+
     if (
       !nome ||
       !email ||
@@ -62,51 +68,53 @@ const Form: React.FC<FormProps> = ({ onCalculate, onSaveUser }) => {
       alert("Preencha todos os campos corretamente.");
       return;
     }
-  
-    // Conversão para números antes do cálculo
-    const rendaMensalNum = parseFloat(rendaMensal.replace(/[^\d,-]/g, "").replace(",", "."));
-    const aporteInicialNum = parseFloat(aporteInicial.replace(/[^\d,-]/g, "").replace(",", "."));
-    const aporteMensalNum = parseFloat(aporteMensal.replace(/[^\d,-]/g, "").replace(",", "."));
-    const taxaAnualNum = parseFloat(taxaAnual.replace(/[^\d,-]/g, "").replace(",", "."));
-  
+
+    // Convertendo para valores numéricos
+    const rendaMensalNum = parseFloat(rendaMensal.replace(/\./g, "").replace(",", "."));
+    const aporteInicialNum = parseFloat(aporteInicial.replace(/\./g, "").replace(",", "."));
+    const aporteMensalNum = parseFloat(aporteMensal.replace(/\./g, "").replace(",", "."));
+    const taxaAnualNum = parseFloat(taxaAnual.replace(/\./g, "").replace(",", "."));
+
     if (
       isNaN(rendaMensalNum) ||
       isNaN(aporteInicialNum) ||
       isNaN(aporteMensalNum) ||
       isNaN(taxaAnualNum)
     ) {
-      alert("Por favor, insira valores válidos nos campos.");
+      alert("Por favor, insira valores válidos.");
       return;
     }
-  
+
     const taxaMensal = Math.pow(1 + taxaAnualNum / 100, 1 / 12) - 1;
     const montanteFinal = rendaMensalNum / taxaMensal;
-  
+
     let tempoMeses = 0;
     let montanteAtual = aporteInicialNum;
-  
+
     while (montanteAtual < montanteFinal && tempoMeses < 1200) {
       montanteAtual += aporteMensalNum;
       montanteAtual *= 1 + taxaMensal;
       tempoMeses++;
     }
-  
+
     if (tempoMeses >= 1200) {
       alert(
         "Com os valores informados, será muito difícil atingir o montante necessário. Tente ajustar os aportes ou a taxa de retorno."
       );
       return;
     }
-  
+
     onSaveUser({ nome, email, dataNascimento });
-  
+
     onCalculate({
       montante: montanteFinal,
       tempo: tempoMeses / 12,
       rendaMensal: rendaMensalNum,
+      aporteMensal: aporteMensalNum,
+      aporteInicial: aporteInicialNum,
+      taxaAnual: taxaAnualNum,
     });
   };
-  
 
   return (
     <form onSubmit={handleSubmit}>
