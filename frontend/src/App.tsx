@@ -1,9 +1,9 @@
-import React, { useState } from "react";
+import React from "react";
 import Form from "./components/Form";
 import ResultPage from "./pages/ResultPage";
 
 function App() {
-  const [result, setResult] = useState<{
+  const [result, setResult] = React.useState<{
     montante: number;
     tempo: number;
     rendaMensal: number;
@@ -25,14 +25,24 @@ function App() {
       if (!response.ok) {
         throw new Error("Erro ao salvar os dados no backend!");
       }
-
     } catch (error) {
       console.error("Erro ao salvar os dados:", error);
     }
   };
 
   return (
-    <div>
+    <div style={{ textAlign: "center", color: "white", backgroundColor: "#121212", minHeight: "100vh", padding: "20px" }}>
+      {/* Header com Nome e descricao */}
+      <header style={{ marginBottom: "20px" }}>
+      <h1 style={{ fontSize: "24px", color: "#ffffff", margin: "10px 0" }}>Calculadora de Aposentadoria</h1>
+      <p style={{ fontSize: "16px", color: "#b0b0b0", maxWidth: "600px", margin: "0 auto" }}>
+        Use nossa calculadora para planejar sua aposentadoria. Preencha os campos com seus dados e veja quanto tempo levará para atingir o montante necessário para sua renda desejada.
+      </p>
+      
+    </header>
+
+
+      {/* Renderização do Formulário ou Resultado */}
       {result === null ? (
         <Form
           onCalculate={(res) => setResult(res)}

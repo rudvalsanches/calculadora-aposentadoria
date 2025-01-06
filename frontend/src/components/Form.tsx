@@ -25,21 +25,13 @@ const Form: React.FC<FormProps> = ({ onCalculate, onSaveUser }) => {
 
   const handleInputChange = (field: string, value: string) => {
     if (["rendaMensal", "aporteInicial", "aporteMensal"].includes(field)) {
-      // Formatar valores monetários no formato brasileiro
       const formattedValue = value
-        .replace(/\D/g, "") // Remove caracteres não numéricos
-        .replace(/(\d)(\d{2})$/, "$1,$2") // Adiciona vírgula para centavos
-        .replace(/(?=(\d{3})+(\D))\B/g, "."); // Adiciona pontos de milhar
-
-      setFormData((prev) => ({
-        ...prev,
-        [field]: formattedValue,
-      }));
+        .replace(/\D/g, "")
+        .replace(/(\d)(\d{2})$/, "$1,$2")
+        .replace(/(?=(\d{3})+(\D))\B/g, ".");
+      setFormData((prev) => ({ ...prev, [field]: formattedValue }));
     } else {
-      setFormData((prev) => ({
-        ...prev,
-        [field]: value,
-      }));
+      setFormData((prev) => ({ ...prev, [field]: value }));
     }
   };
 
@@ -56,20 +48,11 @@ const Form: React.FC<FormProps> = ({ onCalculate, onSaveUser }) => {
       taxaAnual,
     } = formData;
 
-    if (
-      !nome ||
-      !email ||
-      !dataNascimento ||
-      !rendaMensal ||
-      !aporteInicial ||
-      !aporteMensal ||
-      !taxaAnual
-    ) {
+    if (!nome || !email || !dataNascimento || !rendaMensal || !aporteInicial || !aporteMensal || !taxaAnual) {
       alert("Preencha todos os campos corretamente.");
       return;
     }
 
-    // Convertendo para valores numéricos
     const rendaMensalNum = parseFloat(rendaMensal.replace(/\./g, "").replace(",", "."));
     const aporteInicialNum = parseFloat(aporteInicial.replace(/\./g, "").replace(",", "."));
     const aporteMensalNum = parseFloat(aporteMensal.replace(/\./g, "").replace(",", "."));
@@ -117,67 +100,70 @@ const Form: React.FC<FormProps> = ({ onCalculate, onSaveUser }) => {
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <h2>Preencha os dados</h2>
+    <div style={{ maxWidth: "800px", margin: "0 auto", color: "white" }}>
+      <h2>Calculadora de Aposentadoria</h2>
+      <form onSubmit={handleSubmit}>
+        <label htmlFor="nome">Nome:</label>
+        <input
+          id="nome"
+          type="text"
+          value={formData.nome}
+          onChange={(e) => handleInputChange("nome", e.target.value)}
+        />
 
-      <label htmlFor="nome">Nome:</label>
-      <input
-        id="nome"
-        type="text"
-        value={formData.nome}
-        onChange={(e) => handleInputChange("nome", e.target.value)}
-      />
+        <label htmlFor="email">Email:</label>
+        <input
+          id="email"
+          type="email"
+          value={formData.email}
+          onChange={(e) => handleInputChange("email", e.target.value)}
+        />
 
-      <label htmlFor="email">Email:</label>
-      <input
-        id="email"
-        type="email"
-        value={formData.email}
-        onChange={(e) => handleInputChange("email", e.target.value)}
-      />
+        <label htmlFor="dataNascimento">Data de Nascimento:</label>
+        <input
+          id="dataNascimento"
+          type="date"
+          value={formData.dataNascimento}
+          onChange={(e) => handleInputChange("dataNascimento", e.target.value)}
+        />
 
-      <label htmlFor="dataNascimento">Data de Nascimento:</label>
-      <input
-        id="dataNascimento"
-        type="date"
-        value={formData.dataNascimento}
-        onChange={(e) => handleInputChange("dataNascimento", e.target.value)}
-      />
+        <label htmlFor="rendaMensal">Renda Mensal Desejada (R$):</label>
+        <input
+          id="rendaMensal"
+          type="text"
+          value={formData.rendaMensal}
+          onChange={(e) => handleInputChange("rendaMensal", e.target.value)}
+        />
 
-      <label htmlFor="rendaMensal">Renda Mensal Desejada (R$):</label>
-      <input
-        id="rendaMensal"
-        type="text"
-        value={formData.rendaMensal}
-        onChange={(e) => handleInputChange("rendaMensal", e.target.value)}
-      />
+        <label htmlFor="aporteInicial">Aporte Inicial (R$):</label>
+        <input
+          id="aporteInicial"
+          type="text"
+          value={formData.aporteInicial}
+          onChange={(e) => handleInputChange("aporteInicial", e.target.value)}
+        />
 
-      <label htmlFor="aporteInicial">Aporte Inicial (R$):</label>
-      <input
-        id="aporteInicial"
-        type="text"
-        value={formData.aporteInicial}
-        onChange={(e) => handleInputChange("aporteInicial", e.target.value)}
-      />
+        <label htmlFor="aporteMensal">Aporte Mensal (R$):</label>
+        <input
+          id="aporteMensal"
+          type="text"
+          value={formData.aporteMensal}
+          onChange={(e) => handleInputChange("aporteMensal", e.target.value)}
+        />
 
-      <label htmlFor="aporteMensal">Aporte Mensal (R$):</label>
-      <input
-        id="aporteMensal"
-        type="text"
-        value={formData.aporteMensal}
-        onChange={(e) => handleInputChange("aporteMensal", e.target.value)}
-      />
+        <label htmlFor="taxaAnual">Taxa Anual (%):</label>
+        <input
+          id="taxaAnual"
+          type="text"
+          value={formData.taxaAnual}
+          onChange={(e) => handleInputChange("taxaAnual", e.target.value)}
+        />
 
-      <label htmlFor="taxaAnual">Taxa Anual (%):</label>
-      <input
-        id="taxaAnual"
-        type="text"
-        value={formData.taxaAnual}
-        onChange={(e) => handleInputChange("taxaAnual", e.target.value)}
-      />
-
-      <button type="submit">Calcular</button>
-    </form>
+        <button type="submit" style={{ marginTop: "20px", padding: "10px 20px", fontSize: "16px" }}>
+          Calcular
+        </button>
+      </form>
+    </div>
   );
 };
 
